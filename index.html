@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Name Generator - AI Powered</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #00d4ff;
+      --secondary-color: #7b2ff7;
+      --dark-bg: #0a0e27;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --text-light: #e0e6ed;
+      --text-dim: #a0aec0;
+      --success: #4ade80;
+      --error: #f87171;
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1f3a 100%);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="rgba(0, 212, 255, 0.05)" stroke-width="0.5"/></svg>');
+      background-size: 20px 20px;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .logo i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius);
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-dim);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 150px;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border: none;
+      border-radius: var(--border-radius);
+      color: white;
+      font-weight: 500;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .output-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .output-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    .code-preview {
+      background: #0d1117;
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .code-header {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .code-header .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot.red { background-color: #f85149; }
+    .dot.yellow { background-color: #f0883e; }
+    .dot.green { background-color: #56d364; }
+
+    .code-header span {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-left: auto;
+    }
+
+    pre {
+      padding: 1.5rem;
+      overflow: auto;
+      flex: 1;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #e6edf3;
+      background: transparent;
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .notification.success {
+      background: rgba(74, 222, 128, 0.2);
+      border-left: 4px solid var(--success);
+      color: var(--success);
+    }
+
+    .notification.error {
+      background: rgba(248, 113, 113, 0.2);
+      border-left: 4px solid var(--error);
+      color: var(--error);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .notification {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+      }
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* AI features section */
+    .ai-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(0, 212, 255, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+    }
+
+    .feature-description {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class="fas fa-brain"></i>
+        <h1>Get Your Move On</h1>
+      </div>
+      <p class="subtitle">Create personalized HTML email invitation | Get Your Move On, LLC. </p>
+    </header>
+
+    <div class="card">
+      <div class="input-group">
+        
+        <input type="text" id="nameInput" autocomplete="off">
+      </div>
+      
+      <div class="button-group">
+        <button id="generateBtn" onclick="generateCode()">
+          <i class="fas fa-magic"></i> Generate Code
+        </button>
+        <button id="copyBtn" onclick="copyCode()">
+          <i class="fas fa-copy"></i> Copy Code
+        </button>
+      </div>
+    </div>
+
+    <div class="card output-container">
+      <div class="output-header">
+        <h2>Generated HTML Code</h2>
+        <div class="code-actions">
+          <button onclick="downloadCode()" style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; font-size: 0.9rem;">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+      </div>
+      
+      <div class="code-preview">
+        <div class="code-header">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+          <span>index.html</span>
+        </div>
+        <pre id="output"><!-- Your generated HTML code will appear here --></pre>
+      </div>
+    </div>
+
+   
+  </div>
+
+  <!-- Hidden textarea for copying -->
+  <textarea id="hiddenCode" style="position:absolute; left:-9999px;"></textarea>
+  
+  <!-- Notification -->
+  <div id="notification" class="notification">
+    <i class="fas fa-check-circle"></i>
+    <span id="notificationText"></span>
+  </div>
+
+  <script>
+    function generateCode() {
+      const nameInput = document.getElementById("nameInput");
+      const output = document.getElementById("output");
+      const generateBtn = document.getElementById("generateBtn");
+      
+      let name = nameInput.value.trim();
+      
+      if(name === "") {
+        showNotification("দয়া করে নাম লিখুন!", "error");
+        return;
+      }
+      
+      // Show loading state
+      generateBtn.innerHTML = '<span class="loading"></span> Generating...';
+      generateBtn.disabled = true;
+      
+      // Simulate AI processing delay
+      setTimeout(() => {
+        // Generate new HTML code
+        let newCode = `<!-- ===== Header / Hero Section (Fixed Owner image size) ===== -->
+<div style="margin:0; padding:0;">
+  <table role="presentation" width="100%" style="margin-top:10px; border-radius:14px; max-width:600px; margin-left:auto; margin-right:auto; background:linear-gradient(360deg,#4a4a4a 0%,#1a1a1a 100%);">
+    <tr>
+      <!-- Left image -->
+      <td align="center" valign="middle" style="padding:8px 6px;">
+        <img src="https://drive.google.com/thumbnail?id=1P4LqoAnu_nwxVEMzXGact2FheKaLHULD&sz=w1200"
+             width="90" alt="Coffee"
+             style="display:block; width:90px; max-width:90px; height:auto; border:2px solid #f2f2f2; border-radius:12px;">
+      </td>
+
+      <!-- Middle text -->
+      <td align="center" valign="middle" style="padding:8px 6px;">
+        
+        <!-- First line -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+          <tr>
+            <td align="center" style="font-size:15px; line-height:20px; color:#ffffff; font-family:'Trebuchet MS', Arial, sans-serif; white-space:nowrap;">
+             A special invitation to <strong>Morning Coffee or Lunch</strong>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Second line (Join me...) -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin-top:6px; background:#f2f2f2; border-radius:8px;">
+          <tr>
+            <td align="center" style="padding:8px 14px; font-size:13px; line-height:15px; color:#3b3b3b; font-family:'Trebuchet MS', Arial, sans-serif; white-space:nowrap;">
+              Hosted by <strong>Derek Greene</strong>
+            </td>
+          </tr>
+        </table>
+      </td>
+
+      <!-- Right image -->
+      <td align="center" valign="middle" style="padding:8px 6px;">
+        <img src="https://drive.google.com/thumbnail?id=1xUoVT49VzmqtAAlB-uvhtUt6aNhKR3Yg&sz=w1200"
+             width="90" alt="Grille"
+             style="display:block; width:90px; max-width:90px; height:auto; border:2px solid #f2f2f2; border-radius:12px;">
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<!-- ===== Sub-Banner Section ===== -->
+<div style="margin:0; padding:0;">
+  <table role="presentation" width="100%" style="margin-top:10px; background:#f2f2f2; border-radius:14px; max-width:600px; margin-left:auto; margin-right:auto;">
+    <tr>
+      <!-- Left image -->
+      <td align="center" valign="middle" style="padding:8px 6px;">
+        <img src="https://drive.google.com/thumbnail?id=1mYtnxqRco_l5PW0TYrvgukrhakzpOVIb&sz=w600"
+             width="90" alt="Coffee"
+             style="display:block; width:90px; max-width:90px; height:auto; border:0; border-radius:12px;">
+      </td>
+<!-- Middle text -->
+<td align="center" valign="middle" style="padding:8px 6px;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" 
+         style="background:#3b3b3b; border-radius:8px;">
+    <tr>
+      <td align="center" style="padding:8px 14px; font-size:13px; line-height:20px; color:#ffffff; font-family:'Trebuchet MS', Arial, sans-serif; white-space:nowrap;">
+        <a href="https://calendly.com/tuhin-mail-work/30min" target="_blank" 
+           style="color:#ffffff; text-decoration:none; display:inline-block;">
+          Click here to schedule
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin-top:6px;">
+    <tr>
+      <td align="center" style="font-size:13px; line-height:20px; color:#333333; font-family:'Trebuchet MS', Arial, sans-serif; white-space:nowrap;">
+        Pick a time for Coffee or Lunch
+      </td>
+    </tr>
+  </table>
+</td>
+
+
+      <!-- Right image -->
+      <td align="center" valign="middle" style="padding:8px 6px;">
+        <img src="https://drive.google.com/thumbnail?id=1fS4dNQacMmDfPB06uRhF2-ckVrLm1VYe&sz=w600"
+             width="90" alt="Grille"
+             style="display:block; width:90px; max-width:90px; height:auto; border:0;">
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<!-- ===== Body Section ===== -->
+<div style="margin:0; padding:0;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:14px; background:#f2f2f2; border-radius:12px; max-width:600px; margin-left:auto; margin-right:auto;">
+        <tr>
+            <td style="padding:26px 26px 6px 26px; font-family:'Trebuchet MS', Arial, sans-serif; color:#111111; font-size:13px; line-height:22px;">
+                <p style="margin:0 0 14px 0;">Hi ${name},</p>
+                <p style="margin:0 0 14px 0;">
+                    I’d love to connect—your choice: morning coffee at <strong>Press Coffee</strong> or lunch at <strong>The Capital Grille</strong> (my treat). It’d be great to catch up, hear what you’re working on, and share how <strong>Get Your Move On</strong> has been partnering with top realtors to get more listings and close more deals for over 20 years.
+                </p>
+                <p style="margin:0 0 14px 0;">
+                    Tell me which option you prefer and a couple of times that work for you, and I’ll lock in the reservation.
+                </p>
+                <p style="margin:0 0 20px 0;">
+                    Looking forward to it!
+                </p>
+                <p style="margin:0;">Cheers,</p>
+                <p style="margin:0; font-weight:bold;">Derek M. Greene</p>
+                <p style="margin:0;">President | Get Your Move On, LLC</p>
+                <p style="margin:0;">480.695.6621 (Office) | 602.820.3559 (Cell)</p>
+                <p style="margin:0 0 20px 0;">
+                    <a href="mailto:Derek@GetYourMoveOnLLC.com" style="color:#0b66ff; text-decoration:underline; font-family:'Trebuchet MS', Arial, sans-serif;">Derek@GetYourMoveOnLLC.com</a>
+                    &nbsp;|&nbsp;
+                    <a href="https://GetYourMoveOnLLC.com" style="color:#0b66ff; text-decoration:underline; font-family:'Trebuchet MS', Arial, sans-serif;">GetYourMoveOnLLC.com</a>
+                </p>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- ===== Footer Section ===== -->
+<div style="margin:0; padding:0;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:14px; background:#f2f2f2; border-radius:10px; max-width:600px; margin-left:auto; margin-right:auto;">
+        <tr>
+            <td align="center" style="font-family:'Trebuchet MS', Arial, sans-serif; color:#000000; font-size:13px; padding:14px 10px;">
+                Get Your Move On, LLC.
+            </td>
+        </tr>
+    </table>
+</div> `;
+        
+        output.textContent = newCode;
+        document.getElementById("hiddenCode").value = newCode;
+        
+        // Reset button state
+        generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Code';
+        generateBtn.disabled = false;
+        
+        showNotification("Code generated successfully!", "success");
+      }, 800);
+    }
+    
+    function copyCode() {
+      const code = document.getElementById("hiddenCode");
+      const copyBtn = document.getElementById("copyBtn");
+      
+      if(code.value.trim() === "") {
+        showNotification("প্রথমে নাম দিয়ে Generate করুন!", "error");
+        return;
+      }
+      
+      // Show loading state
+      copyBtn.innerHTML = '<span class="loading"></span> Copying...';
+      copyBtn.disabled = true;
+      
+      // Simulate copy delay
+      setTimeout(() => {
+        code.select();
+        document.execCommand("copy");
+        
+        // Reset button state
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Code';
+        copyBtn.disabled = false;
+        
+        showNotification("Code copied to clipboard!", "success");
+      }, 500);
+    }
+    
+    function downloadCode() {
+      const code = document.getElementById("hiddenCode");
+      
+      if(code.value.trim() === "") {
+        showNotification("প্রথমে নাম দিয়ে Generate করুন!", "error");
+        return;
+      }
+      
+      const element = document.createElement('a');
+      const name = document.getElementById("nameInput").value.trim() || "index";
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(code.value));
+      element.setAttribute('download', `${name}.html`);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+      showNotification("Code downloaded successfully!", "success");
+    }
+    
+    function showNotification(message, type) {
+      const notification = document.getElementById("notification");
+      const notificationText = document.getElementById("notificationText");
+      
+      notification.className = `notification ${type}`;
+      notificationText.textContent = message;
+      
+      // Update icon based on type
+      const icon = notification.querySelector('i');
+      if (type === "success") {
+        icon.className = "fas fa-check-circle";
+      } else {
+        icon.className = "fas fa-exclamation-circle";
+      }
+      
+      notification.classList.add("show");
+      
+      // Hide notification after 3 seconds
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+    
+    // Add keyboard support
+    document.getElementById("nameInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        generateCode();
+      }
+    });
+  </script>
+</body>
+</html>
